@@ -22,6 +22,7 @@ func New() *Engine {
 func (engine *Engine) addRoute(method string, pattern string, handler HandlerFunc) {
 	key := method + "-" + pattern
 	log.Printf("Route %4s - %s", method, pattern)
+
 	engine.router[key] = handler
 }
 
@@ -40,8 +41,10 @@ func (engine *Engine) Run(addr string) (err error) {
 	return http.ListenAndServe(addr, engine)
 }
 
+// 实现 Handler.ServeHTTP，解析请求路径，查找路由映射表
 func (engine *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	key := req.Method + "-" + req.URL.Path
+
 	if handler, ok := engine.router[key]; ok {
 		handler(w, req)
 	} else {
